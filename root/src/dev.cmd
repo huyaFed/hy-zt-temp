@@ -1,0 +1,1 @@
+fis release -d ../dev -pD & pause
