@@ -7,7 +7,7 @@ fis.config.set('roadmap.domain', 'http://huyafed.yy.com/dist');
 fis.config.merge({
     //项目过滤
     project: {
-        exclude: [/node_modules\/|\.svn\/|\.git\//i, 'Gruntfile.js', 'package.json', 'docs/**', '**.cmd', '**.sh','**.md']
+        exclude: [/node_modules\/|\.svn\/|\.git\//i, 'Gruntfile.js', 'package.json', 'docs/**', '**.cmd', '**.sh','**.md','component.json']
     },
     //fis插件配置
     modules: {
