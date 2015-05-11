@@ -1,7 +1,7 @@
 //o：压缩   p：标准化  w：自动更新  D：添加域名   -d 发布路径
 //fis release -opwD -d ../dist
 
-fis.config.set('roadmap.domain', 'http://huyafed.yy.com/dist');
+fis.config.set('roadmap.domain', 'http://huyafed.yy.com/hy-zt-temp/root/dist');
 //fis.config.set('roadmap.domain', '.');
 
 fis.config.merge({
