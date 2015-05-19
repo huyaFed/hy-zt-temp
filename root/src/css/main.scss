@@ -9,8 +9,8 @@ $base-background-color   : #fff !default; // 背景颜色
 $base-link-color         : #333 #f40 !default; // 链接颜色[default，hover]
 
 
-@import "tool/_function";
-@import "tool/_helper";
+/* @import "tool/_function"; */
+/* @import "tool/_helper"; */
 @import "tool/_mixins";
 
 @import "base/_reset";
