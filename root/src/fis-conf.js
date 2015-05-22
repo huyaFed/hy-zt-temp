@@ -152,7 +152,7 @@ fis.config.merge({
                 autoCombine: true
             }
         }
-    },
+    }
     //可以开启这里设置不进行全部打包进去
     /*pack : {
         'pkg/ai_b.js' : ['modules/app/b.js']
