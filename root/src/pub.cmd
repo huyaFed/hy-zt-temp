@@ -1,1 +1,1 @@
-fis release -d ../dist -opD & pause
+fis release -d ../dist -opDm & pause
