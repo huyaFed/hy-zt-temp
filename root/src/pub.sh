@@ -1,1 +1,1 @@
-fis release -d ../dist -opDm
+fis release -d dist -opDm

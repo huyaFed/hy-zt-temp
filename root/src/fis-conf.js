@@ -4,10 +4,25 @@
 fis.config.set('roadmap.domain', 'http://huyafed.yy.com/hy-zt-temp/root/dist');
 //fis.config.set('roadmap.domain', '.');
 
+
+fis.config.merge({
+	deploy :{
+		//开发目录-
+		dev : {
+			to : '../dev'
+		},
+		//生成目录---可以是绝对地址 F:/git_code/ganxie_tx/js/fis_test/dist
+		dist : {
+			to : '../dist'
+		}
+	}
+});
+
+
 fis.config.merge({
     //项目过滤
     project: {
-        exclude: [/node_modules\/|\.svn\/|\.git\//i, 'Gruntfile.js', 'package.json', 'docs/**', '**.cmd', '**.sh','**.md','component.json']
+        exclude: [/node_modules\/|\.svn\/|\.git\//i, 'Gruntfile.js', 'package.json', 'docs/**', '**.cmd', '**.sh','**.md','components/**.json']
     },
     //fis插件配置
     modules: {

@@ -1,1 +1,1 @@
-fis release -d ../dev -pD & pause
+fis release -d dev -pD & pause

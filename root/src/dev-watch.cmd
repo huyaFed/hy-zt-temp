@@ -1,1 +1,1 @@
-fis release -d ../dev -pDw
+fis release -d dev -pDw
