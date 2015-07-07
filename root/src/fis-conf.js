@@ -99,14 +99,18 @@ fis.config.merge({
     //插件的配置信息
     settings: {
         lint: {
-            //http://cweili.gitcafe.com/jshint-options/
+            //http://www.cnblogs.com/code/articles/4103070.html
             jshint: {
                 //此选项允许您强制所有变量名以使用驼峰式或UPPER_CASE带下划线
                 camelcase: true,
                 //使用{}来明确代码块
                 curly: true,
+                //使用===和!==替代==和!=
+                eqeqeq:true,
                 //在for in循环中使用Object.prototype.hasOwnProperty()来过滤原型链中的属性
                 forin: true,
+                //禁止复写原生对象(如Array, Date)的原型
+                freeze : true,
                 //匿名函数调用必须
                 immed: true,
                 //变量定义前禁止使用
@@ -118,9 +122,13 @@ fis.config.merge({
                 //禁止出现空的代码块
                 noempty: true,
                 node: true,
+                //代码最多可以嵌套几层
+                maxdepth : 2,
+                //函数可以接受的最大参数数量
+                maxparams : 3,
                 //中文报错
                 i18n : 'zh-CN',
-                ignored: ['lib/**', /jquery|backbone|underscore/i]
+                ignored: ['lib/**', /jquery|backbone|underscore/i,'components/**']
             }
         },
         optimizer: {
