@@ -32,6 +32,24 @@
     }
 }
 
+/* @name: 上下左右居中 (未知高度)
+ * @ps: 需要设置父元素 display:table
+ */
+@mixin centers{
+    display:table-cell;
+    vertical-align:middle;
+}
+
+/* @name: 上下左右居中 （确定高度）*/
+@mixin centersHight{
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+}
+
 
 /*
  * @name:  浮动
