@@ -1,1 +1,1 @@
-fis release -d dev -pDwc
+fis release -f fis-dev.js -d dev -pDwc

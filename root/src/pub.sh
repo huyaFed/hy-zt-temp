@@ -1,1 +1,1 @@
-fis release -d dist -opDm
+fis release -f fis-pub.js -d dist -opDm
