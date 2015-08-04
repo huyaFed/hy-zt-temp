@@ -1,1 +1,1 @@
-fis release -f fis-pub.js -d dist -opDm & pause
+fis release -f fis-pub.js -d pub -opDm & pause
