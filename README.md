@@ -30,12 +30,12 @@ _请注意,该模板将生成文件在当前目录中,所以一定要先切换�
 
 该模板使用的是fis的编译工具，依赖于以下插件
 
-* npm install -g fis
+* npm install -g fis@1.9.2
 * npm install -g fis-parser-utc   //编译underscore模板
 * npm install -g fis-postpackager-autoload   //用于自动加载模块化资源的FIS插件
 * npm install -g fis-postpackager-simple  //用于自动打包页面零散资源和应用打包资源的FIS插件
 * npm install -g fis-postprocessor-require-async   //require.async执行的组件，并把它们记录下来
-* npm install -g fis-parser-sass   //编译sass
+* npm install -g fis-parser-sass@0.3.9   //编译sass
 * npm install -g fis-postprocessor-autoprefixer  //自动补充css3的样式
 
 *fis-parser-sass依赖于 node的版本为0.10.x*
