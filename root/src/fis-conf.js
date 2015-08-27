@@ -153,7 +153,8 @@ exports.getConfig = function(mode) {
             },
             postpackager: {
                 simple: {
-                    autoCombine: true
+                    autoCombine: true,
+                    headTag : '<!--HEAD_END-->'
                 }
             }
         }
