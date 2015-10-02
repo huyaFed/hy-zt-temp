@@ -18,7 +18,7 @@
 		if(!seed){return;}
 
 		// 取消老版产品监控。
-		if(arguments.length >= 3){return;}
+		//if(arguments.length >= 3){return;}
 
 		var data;
 		if(Object.prototype.toString.call(seed) === "[object Object]"){
@@ -155,7 +155,7 @@
 
 })(this, this.Sai);
 
-
+//发送
 (function(win){
 
 	var M = win.Sai;
@@ -348,4 +348,287 @@
 	timedSend();
 
 	win.Sai = M;
-})(window)
+})(window);
+
+
+//监控-DNS劫持恶意行为
+//document.write("<script language='javascript' src='http://www.res.meizu.com/zh_cn/js/common.js?aaa=aa'>");
+(function(doc,win){
+	//通过document.write、document.writeln的方式注入广告的挟持上报
+	var _write = doc.write = document.writeln,
+	//白名单列表
+	_white_list = [
+		'yy.com',
+		'huya.com',
+		'duowan.com',
+		'baidu.com',
+		'google-analytics.com',
+		'hiido.com',
+		'gov.cn',
+		'udb.duowan.com',
+		'dwstatic.com'
+	],
+	// 发送统计劫持情况
+	send = function(reason){
+		if(win.ga){
+			/*category（必需）：类别 DNSwrite
+			action（必需）：和用户的行为对应，例如“下载”
+			label：标签，其他有关信息
+			value：提供数值型数据
+			non-interaction：布尔值。如果设定为 true，表明这个事件不会参与跳出率的计算*/
+	    	ga('send', 'event', 'DNSwrite', reason, {'nonInteraction': 1});
+		}
+	},
+	_RE_SCRIPTS = /<script.*?src\=["']?([^\s>]+)/ig,
+	_RE_DOMAIN = /(.+?)\.([^\/]+).+/;
+	_RE_SRC = /src=['"](.*)['"]/;
+
+	doc.write = doc.writeln = function(str){
+	    try {
+	        var s, len, url, unkowns = [];
+	        if(s = str.match(_RE_SCRIPTS)){
+	        	for(var i=0,len =s.length; i<len; i++){
+	        		url = _RE_DOMAIN.exec(s[i]) || [];
+	        		if (_white_list.indexOf(url[2])<0) {			        			
+		                unkowns.push(s[i].match(_RE_SRC) && s[i].match(_RE_SRC)[1] || url[2]);
+		            }
+	        	}	
+	        }
+	        if (unkowns.length > 0) {
+	            send(unkowns.join("#URL="));
+	        }			        
+	        try {
+	        	_write.call(this, str);
+	        } catch (ex) {
+	        	_write(str);
+	        }
+	    } catch (ex) {
+	    	if(win.Sai){
+	    		Sai.error(new Error("document-write捉取异常"));
+	    	}			    	
+	    }
+	};
+
+	//监听页面上的alert
+	var _alert = alert;
+	win.alert = function(s,flag) {
+		if(win.ga && flag){
+			/*category（必需）：类别 DNSwrite
+			action（必需）：和用户的行为对应，例如“下载”
+			label：标签，其他有关信息
+			value：提供数值型数据
+			non-interaction：布尔值。如果设定为 true，表明这个事件不会参与跳出率的计算*/
+	    	ga('send', 'event', 'alert', s, {'nonInteraction': 1});
+		}
+		_alert(s);
+	}
+
+	//监听页面上的eval、window.execScript
+	var _eval = eval;
+	eval = win.execScript = function(s,flag) {
+		if(win.ga && flag){
+			/*category（必需）：类别 DNSwrite
+			action（必需）：和用户的行为对应，例如“下载”
+			label：标签，其他有关信息
+			value：提供数值型数据
+			non-interaction：布尔值。如果设定为 true，表明这个事件不会参与跳出率的计算*/
+	    	ga('send', 'event', 'eval', s, {'nonInteraction': 1});
+		}
+		_eval(s);
+	}
+
+})(document,window);
+
+//XSS内联事件的检查
+//http://ziggy.sinaapp.com/?p=60
+//http://fex.baidu.com/blog/2014/06/xss-frontend-firewall-1/
+(function(win){
+	var mCheckMap = {};
+    var mCheckID = 0;
+    var STD_DOM = !!window.addEventListener;
+    if(!STD_DOM){
+    	return false;
+    }
+
+    function send(reason){
+    	if(win.ga){
+			/*category（必需）：类别
+			action（必需）：和用户的行为对应，例如“下载”
+			label：标签，其他有关信息
+			value：提供数值型数据
+			non-interaction：布尔值。如果设定为 true，表明这个事件不会参与跳出率的计算*/
+	    	ga('send', 'event', 'XSSinlne', reason, {'nonInteraction': 1});
+		}
+    }
+
+
+    function chkxss(code){
+		// URL解码
+		try{
+			decodecode = decodeURIComponent(code);
+		}catch(e){
+			decodecode = code;
+		}
+		var xsses = ["fromCharCode","join","concat","slice","substr",
+	                 "match","split","escape","encodeURI","replace",
+	                 "\\","eval","setTimeout","setInterval","getScript",
+	                 "constructor","erHTML","Attribute","unction","execScript",
+	                 "with","setImmediate","createElement","write","name",
+	                 "referer","cookie","location","click","document"];
+		for(i=0;i<xsses.length;i++){
+			// indexOf方法查找过滤表中的关键字，如果没有查到返回-1，否则视为xss攻击行为
+			// 注意indexOf方法严格区分大小写
+			if(decodecode.indexOf(xsses[i])>-1){
+				return true;
+			}
+		}
+		// 正则表达式“(&&)|;|,|\[”匹配成功 并且 含有“+”，则视为xss攻击行为
+		if(/(&&)|;|,|\[/.test(decodecode)&&decodecode.indexOf("+")>-1){
+			return true;
+		}
+		// (含有“URL”或者含有“hash”) 并且 location.href中含有"#"，则视为xss攻击行为
+		if((decodecode.indexOf("URL")>-1||decodecode.indexOf("hash"))>-1&&location.href.indexOf("#")>-1){
+			return true;
+		}
+		// 长度大于150视为xss攻击行为
+		if(code.length>150){
+			return true;
+		}
+		// 含有“open” 或者 增则表达式“\Wsrc\W”匹配成功，则视为xss攻击行为
+		if(decodecode.indexOf('open')>-1||/\Wsrc\W/.test(decodecode)){
+			//添加多一层
+			if(decodecode.indexOf('dwstatic.com') == -1 && decodecode.indexOf('window.Sai') == -1){
+				return true;
+			}
+		}
+		return false;
+	}
+
+
+    function hookEvent(eventName, eventID) {
+        var isClick = (eventName == 'onclick');
+
+        function scanElement(el) {
+            //
+            // 跳过已扫描的事件
+            //
+            var flag = el['_k'];
+            if (!flag) {
+                flag = el['_k'] = ++mCheckID;
+            }
+
+            var hash = (flag << 8) | eventID;
+            if (hash in mCheckMap) {
+                return;
+            }
+            mCheckMap[hash] = true;
+
+            // 非元素节点
+            if (el.nodeType != Node.ELEMENT_NODE) {
+                return;
+            }
+
+            // 扫描内联代码
+            var code;
+            if (el[eventName]) {
+                code = el.getAttribute(eventName);
+                if (code && chkxss(code)) {
+                    el[eventName] = null;
+                    send(code);
+                }
+            }
+
+            // 扫描 <a href="javascript:"> 的脚本
+            if (isClick && el.tagName == 'A' && el.protocol == 'javascript:') {
+                var code = el.href.substr(11);
+                if (code && chkxss(code)) {
+                    el.href = 'javascript:void(0)';
+                    send(code);
+                }
+            }
+
+            // 扫描上级元素
+            scanElement(el.parentNode);
+        }
+
+        document.addEventListener(eventName.substr(2), function(e) {
+            scanElement(e.target);
+        }, true);
+    }
+
+    var i = 0;
+    // 遍历所有document的所有元素，对内联事件进行过滤
+	// 浏览器所有内联事件都对应着 document.onxxx 的属性
+    for (var k in document) {
+    	// 正则匹配所有on开头的元素
+        if (/^on./.test(k)) {
+        	// 前端主动过滤
+            hookEvent(k, i++);
+        }
+    }
+})(window);
+
+//MutationObserver的检测，只做检测
+(function(win){
+	var MutationObserver = win.MutationObserver || win.WebKitMutationObserver || win.MozMutationObserver; 
+	var isSupportMutationObserver = !!MutationObserver; 
+	var _RE_DOMAIN = /(.+?)\.([^\/]+).+/;
+	//白名单
+	var _white_list = [
+		'yy.com',
+		'huya.com',
+		'duowan.com',
+		'baidu.com',
+		'google-analytics.com',
+		'hiido.com',
+		'gov.cn',
+		'udb.duowan.com',
+		'dwstatic.com'
+	]
+	if(!isSupportMutationObserver){ return; } 
+	function send(reason){
+    	if(win.ga){
+			/*category（必需）：类别
+			action（必需）：和用户的行为对应，例如“下载”
+			label：标签，其他有关信息
+			value：提供数值型数据
+			non-interaction：布尔值。如果设定为 true，表明这个事件不会参与跳出率的计算*/
+	    	ga('send', 'event', 'MutationObserver', reason, {'nonInteraction': 1});
+		}
+    }
+	var observeDuration = 100000;//监控10分钟 
+	var observeOptions = {
+		//子节点的变动
+		'childList': true,
+		//所有后代节点的变动 
+		'subtree': true 
+	}; 
+	var detector = function(records){ 
+		records.map(function(record) { 
+			if(record.type != 'childList'){ return; } 
+			if(record.addedNodes.length == 0){ return; } 
+			var addedNode = record.addedNodes[0]; 
+			if(addedNode && addedNode.nodeName && addedNode.nodeName.toLowerCase()=="script" && addedNode.src){
+				var urlSrc = addedNode.src;
+
+				if(_white_list.indexOf(urlSrc.match(_RE_DOMAIN)[2])<0){
+					send(urlSrc);
+				}
+			} 
+		}); 
+	}; 
+
+	var observer = new MutationObserver(detector); 
+	observer.observe(document.documentElement , observeOptions); 
+
+	setTimeout(function(){ 
+		try{ 
+			//停止观察 
+			observer.disconnect(); 
+			//清除变动记录 
+			observer.takeRecords(); 
+		}catch(e){
+
+		} 	
+	},observeDuration);
+})(window);
