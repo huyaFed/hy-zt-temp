@@ -367,7 +367,7 @@
 		'gov.cn',
 		'udb.duowan.com',
 		'dwstatic.com'
-	],
+	].join(","),
 	// 发送统计劫持情况
 	send = function(reason){
 		if(win.ga){
@@ -380,7 +380,7 @@
 		}
 	},
 	_RE_SCRIPTS = /<script.*?src\=["']?([^\s>]+)/ig,
-	_RE_DOMAIN = /(.+?)\.([^\/]+).+/;
+	_RE_DOMAIN = /(.+?)\.([^\/]+).+/,
 	_RE_SRC = /src=['"](.*)['"]/;
 
 	doc.write = doc.writeln = function(str){
@@ -404,7 +404,7 @@
 	        }
 	    } catch (ex) {
 	    	if(win.Sai){
-	    		Sai.error(new Error("document-write捉取异常"));
+	    		alert(new Error("document-write捉取异常"));
 	    	}			    	
 	    }
 	};
